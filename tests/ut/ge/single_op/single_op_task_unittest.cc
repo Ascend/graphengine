@@ -19,7 +19,6 @@
 
 #include "graph/load/model_manager/model_utils.h"
 #include "graph/utils/graph_utils.h"
-#include "hybrid/node_executor/aicpu/aicpu_ext_info.h"
 #include "runtime/rt.h"
 
 #define protected public
@@ -31,7 +30,6 @@
 #include "external/register/op_tiling_registry.h"
 #undef private
 #undef protected
-#include "tests/depends/runtime/src/runtime_stub.h"
 
 using namespace std;
 using namespace testing;
@@ -40,13 +38,9 @@ using namespace optiling;
 
 class UtestSingleOpTask : public testing::Test {
  protected:
-  void SetUp() {
-    RTS_STUB_SETUP();
-  }
+  void SetUp() {}
 
-  void TearDown() {
-    RTS_STUB_TEARDOWN();
-  }
+  void TearDown() {}
 };
 
 TEST_F(UtestSingleOpTask, test_build_kernel_task) {
@@ -242,125 +236,4 @@ TEST_F(UtestSingleOpTask, test_aicpu_task_update_io_addr) {
     auto ret = task.UpdateIoAddr(inputs, outputs);
     ASSERT_EQ(ret, PARAM_INVALID);
   }
-}
-
-TEST_F(UtestSingleOpTask, test_blocking_aicpu_op_01) {
-  int len = sizeof(hybrid::AicpuExtInfo) + sizeof(hybrid::AsyncWaitInfo);
-  vector<char> aicpu_ext_info(len, 0);
-  char *buf = aicpu_ext_info.data();
-  int offset = 0;
-  hybrid::AicpuExtInfo *ext_info = reinterpret_cast<hybrid::AicpuExtInfo*>(buf + offset);
-  ext_info->infoType = aicpu::FWKAdapter::FWK_ADPT_EXT_ASYNCWAIT;
-  ext_info->infoLen = sizeof(hybrid::AsyncWaitInfo);
-  offset += sizeof(hybrid::AicpuExtInfo);
-  hybrid::AsyncWaitInfo *async_wait_info = reinterpret_cast<hybrid::AsyncWaitInfo*>(buf + offset);
-  async_wait_info->waitType = 0;
-  async_wait_info->waitId = 0;
-  async_wait_info->timeOut = 0;
-  async_wait_info->reserved = 0;
-
-  domi::KernelDef kernel_def;
-  kernel_def.set_kernel_ext_info(buf, len);
-  kernel_def.set_kernel_ext_info_size(len);
-
-  auto op_desc = make_shared<OpDesc>("deque", "Deque");
-  ge::AttrUtils::SetBool(op_desc, ATTR_NAME_IS_BLOCKING_OP, true);
-  AiCpuCCTask aicpu_task;
-  aicpu_task.SetOpDesc(op_desc);
-  rtStream_t stream;
-  ASSERT_EQ(rtStreamCreate(&stream, 0), RT_ERROR_NONE);
-
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), SUCCESS);
-}
-
-TEST_F(UtestSingleOpTask, test_blocking_aicpu_op_02) {
-  int len = sizeof(hybrid::AicpuExtInfo) + sizeof(hybrid::AsyncWaitInfo);
-  vector<char> aicpu_ext_info(len, 0);
-  char *buf = aicpu_ext_info.data();
-  int offset = 0;
-  hybrid::AicpuExtInfo *ext_info = reinterpret_cast<hybrid::AicpuExtInfo*>(buf + offset);
-  ext_info->infoType = aicpu::FWKAdapter::FWK_ADPT_EXT_ASYNCWAIT;
-  ext_info->infoLen = sizeof(hybrid::AsyncWaitInfo);
-  offset += sizeof(hybrid::AicpuExtInfo);
-  hybrid::AsyncWaitInfo *async_wait_info = reinterpret_cast<hybrid::AsyncWaitInfo*>(buf + offset);
-  async_wait_info->waitType = 0;
-  async_wait_info->waitId = 0;
-  async_wait_info->timeOut = 0;
-  async_wait_info->reserved = 0;
-
-  domi::KernelDef kernel_def;
-  kernel_def.set_kernel_ext_info(buf, len);
-  kernel_def.set_kernel_ext_info_size(len);
-
-  auto op_desc = make_shared<OpDesc>("deque", "Deque");
-  ge::AttrUtils::SetBool(op_desc, ATTR_NAME_IS_BLOCKING_OP, true);
-  AiCpuTask aicpu_task;
-  aicpu_task.SetOpDesc(op_desc);
-  rtStream_t stream;
-  ASSERT_EQ(rtStreamCreate(&stream, 0), RT_ERROR_NONE);
-
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), SUCCESS);
-}
-
-TEST_F(UtestSingleOpTask, test_blocking_aicpu_op_fail) {
-  int len = sizeof(hybrid::AicpuExtInfo) + sizeof(hybrid::AsyncWaitInfo);
-  vector<char> aicpu_ext_info(len, 0);
-  char *buf = aicpu_ext_info.data();
-  int offset = 0;
-  hybrid::AicpuExtInfo *ext_info = reinterpret_cast<hybrid::AicpuExtInfo*>(buf + offset);
-  ext_info->infoType = aicpu::FWKAdapter::FWK_ADPT_EXT_ASYNCWAIT;
-  ext_info->infoLen = sizeof(hybrid::AsyncWaitInfo);
-  offset += sizeof(hybrid::AicpuExtInfo);
-  hybrid::AsyncWaitInfo *async_wait_info = reinterpret_cast<hybrid::AsyncWaitInfo*>(buf + offset);
-  async_wait_info->waitType = 0;
-  async_wait_info->waitId = 0;
-  async_wait_info->timeOut = 0;
-  async_wait_info->reserved = 0;
-
-  domi::KernelDef kernel_def;
-  kernel_def.set_kernel_ext_info(buf, len);
-  kernel_def.set_kernel_ext_info_size(len);
-
-  auto op_desc = make_shared<OpDesc>("deque", "Deque");
-  ge::AttrUtils::SetBool(op_desc, ATTR_NAME_IS_BLOCKING_OP, true);
-  AiCpuTask aicpu_task;
-  aicpu_task.SetOpDesc(op_desc);
-  rtStream_t stream;
-  ASSERT_EQ(rtStreamCreate(&stream, 0), RT_ERROR_NONE);
-
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), SUCCESS);
-
-  RTS_STUB_RETURN_VALUE(rtGetDevice, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), FAILED);
-
-  RTS_STUB_RETURN_VALUE(rtGetDeviceCapability, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), FAILED);
-
-  RTS_STUB_RETURN_VALUE(rtGetDeviceCapability, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), FAILED);
-
-  RTS_STUB_RETURN_VALUE(rtGetDeviceCapability, rtError_t, RT_ERROR_NONE);
-  RTS_STUB_OUTBOUND_VALUE(rtGetDeviceCapability, int32_t, value, RT_AICPU_BLOCKING_OP_SUPPORT + 1);
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), FAILED);
-
-  RTS_STUB_RETURN_VALUE(rtGetDevice, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), FAILED);
-
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  RTS_STUB_RETURN_VALUE(rtStreamWaitEvent, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), FAILED);
-
-  ASSERT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  RTS_STUB_RETURN_VALUE(rtEventReset, rtError_t, 0x78000001);
-  ASSERT_EQ(aicpu_task.LaunchKernel(stream), FAILED);
-
-  RTS_STUB_RETURN_VALUE(rtGetDeviceCapability, rtError_t, RT_ERROR_NONE);
-  RTS_STUB_OUTBOUND_VALUE(rtGetDeviceCapability, int32_t, value, RT_AICPU_BLOCKING_OP_NOT_SUPPORT);
-  EXPECT_EQ(aicpu_task.SetExtInfoAndType(kernel_def.kernel_ext_info(), 0), SUCCESS);
-  RTS_STUB_RETURN_VALUE(rtGetDeviceCapability, rtError_t, RT_ERROR_NONE);
-  RTS_STUB_OUTBOUND_VALUE(rtGetDeviceCapability, int32_t, value, RT_AICPU_BLOCKING_OP_NOT_SUPPORT);
-  EXPECT_EQ(aicpu_task.LaunchKernel(stream), SUCCESS);
 }

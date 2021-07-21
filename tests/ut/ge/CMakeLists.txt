@@ -936,7 +936,6 @@ target_link_libraries(ge_single_op PRIVATE
     ascend_protobuf
     json
     c_sec
-    runtime_stub
 )
 
 # ut binary

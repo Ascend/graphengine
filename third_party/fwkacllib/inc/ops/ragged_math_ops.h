@@ -35,11 +35,7 @@ namespace ge {
 *@li deltas: The deltas of each range . \n
 
 *@par Outputs:
-*@li rt_dense_values:The `flat_values` for the returned `RaggedTensor`.
-*@li rt_nested_splits:The `row_splits` for the returned `RaggedTensor`. \n
-
-*@par Attributes:
-*Tsplits:A type of rt_nested_splits.
+*y:A Returns The `row_splits` for the returned `RaggedTensor`.The `flat_values` for the returned `RaggedTensor` . \n
 
 *@attention Constraints:
 *The input tensors `starts`, `limits`, and `deltas` may be scalars or vectors.

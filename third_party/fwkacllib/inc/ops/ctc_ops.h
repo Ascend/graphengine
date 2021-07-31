@@ -74,7 +74,7 @@ REG_OP(CTCLoss)
 *@li sequence_length: A vector containing sequence lengths, size `(batch_size)`. \n
 
 *@par Attributes:
-* merge_repeated: If True, merge repeated classes in output. \n
+*@li merge_repeated: If True, merge repeated classes in output. \n
 
 *@par Outputs:
 *@li decoded_indices: Indices matrix, size `(total_decoded_outputs x 2)`,
@@ -108,8 +108,6 @@ REG_OP(CTCGreedyDecoder)
 
 *@par Attributes:
 *@li merge_repeated: If True, merge repeated classes in output. \n
-*@li beam_width:A scalar >= 0 (beam search beam width).
-*@li top_paths:A scalar >= 0, <= beam_width (controls output size).
 
 *@par Outputs:
 *@li decoded_indices: A list (length: top_paths) of indices matrices.  Matrix j,
@@ -164,7 +162,7 @@ REG_OP(CTCBeamSearchDecoder)
 * Compatible with Pytorch CTCLoss operator.
 
 *@par Restrictions:
-*The length of Label should in [4, 1000].
+*Warning: THIS FUNCTION IS EXPERIMENTAL. Please do not use.
 */
 REG_OP(CTCLossV2)
     .INPUT(log_probs, TensorType({DT_FLOAT, DT_DOUBLE}))
@@ -205,7 +203,7 @@ REG_OP(CTCLossV2)
 * Compatible with Pytorch CTCLoss operator.
 
 *@par Restrictions:
-*The limit of Label’s length is 1K.
+*Warning: THIS FUNCTION IS EXPERIMENTAL. Please do not use.
 */
 REG_OP(CTCLossV2Grad)
     .INPUT(grad_out, TensorType({DT_FLOAT, DT_DOUBLE}))

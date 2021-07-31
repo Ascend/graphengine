@@ -19,7 +19,7 @@
 
 #include "base.h"
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 extern "C" {
 #endif
 
@@ -35,6 +35,16 @@ typedef enum rtEventWaitStatus {
  */
 #define RT_EVENT_DEFAULT (0x0E)
 #define RT_EVENT_WITH_FLAG (0x0B)
+
+#define RT_EVENT_DDSYNC_NS    0x01U
+#define RT_EVENT_STREAM_MARK  0x02U
+#define RT_EVENT_DDSYNC       0x04U
+#define RT_EVENT_TIME_LINE    0x08U
+
+#define RT_EVENT_DDSYNC_NS    0x01U
+#define RT_EVENT_STREAM_MARK  0x02U
+#define RT_EVENT_DDSYNC       0x04U
+#define RT_EVENT_TIME_LINE    0x08U
 
 #define RT_EVENT_DDSYNC_NS    0x01U
 #define RT_EVENT_STREAM_MARK  0x02U
@@ -272,7 +282,7 @@ RTS_API rtError_t rtNotifyGetAddrOffset(rtNotify_t notify, uint64_t *devAddrOffs
  */
 RTS_API rtError_t rtSetIpcNotifyPid(const char *name, int32_t pid[], int num);
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 }
 #endif
 

@@ -8,7 +8,7 @@
 
 #include "base.h"
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 extern "C" {
 #endif
 
@@ -22,7 +22,6 @@ extern "C" {
  * @return RT_ERROR_NONE for ok, others failed
  */
 RTS_API rtError_t rtStarsTaskLaunch(const void *taskSqe, uint32_t sqeLen, rtStream_t stream);
-
 
 /**
  * @ingroup rt_stars
@@ -77,11 +76,10 @@ RTS_API rtError_t rtCdqEnQueue(const char *queName, uint32_t cdqeIndex, void *da
  * @param [in] stream       launch task on the stream
  * @return RT_ERROR_NONE for ok, others failed
  */
-RTS_API rtError_t rtCdqEnQueuePtrMode(const char *queName, uint32_t cdqeIndex, const void *ptrAddr,
+RTS_API rtError_t rtCdqEnQueuePtrMode(const char *queName, uint32_t cdqeIndex, const void *prtAddr,
     rtStream_t stream);
 
-#if defined(__cplusplus)
-
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 }
 #endif
 #endif // __CCE_RUNTIME_STARS_H

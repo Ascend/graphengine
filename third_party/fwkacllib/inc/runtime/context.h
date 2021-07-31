@@ -19,7 +19,7 @@
 
 #include "base.h"
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 extern "C" {
 #endif
 
@@ -157,7 +157,7 @@ RTS_API rtError_t rtGetGroupCount(uint32_t *count);
  */
 RTS_API rtError_t rtSetCtxINFMode(bool mode);
 
-#if defined(__cplusplus)
+#if defined(__cplusplus) && !defined(COMPILE_OMG_PACKAGE)
 }
 #endif
 
